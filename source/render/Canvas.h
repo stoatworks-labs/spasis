@@ -25,7 +25,18 @@ public:
 
 	/// Draw one frame. Assumes the caller has saved GL state and will restore
 	/// it; see `GLState.h` for why that is not done in here.
-	void render( const Mesh& mesh, const ViewParams& view, GLuint destFBO,
+	/**
+		`graticule` is drawn straight to the output AFTER the composite, not
+		into the persistence buffer.
+
+		That is the whole reason it is a separate mesh. The accumulator is
+		additive with a decay, so anything static drawn into it converges on
+		`value / (1 - decay)` -- markings that start as a hint and end up
+		brighter than the trace, and brighter still the longer the persistence
+		is set. Drawing them over the top instead keeps them at exactly the
+		intensity asked for, whatever else is happening.
+	*/
+	void render( const Mesh& mesh, const Mesh& graticule, const ViewParams& view, GLuint destFBO,
 				 GLsizei width, GLsizei height, float decay,
 				 const float foreground[ 4 ], const float background[ 4 ] );
 
@@ -36,6 +47,7 @@ public:
 
 private:
 	bool buildShaders();
+	void drawMesh( const Mesh& mesh );
 
 	ffglex::FFGLShader traceShader_;
 	ffglex::FFGLShader compositeShader_;

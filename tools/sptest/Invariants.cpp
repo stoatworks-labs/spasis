@@ -13,6 +13,7 @@
 */
 #include "../../source/analysis/Analyser.h"
 #include "../../source/audio/Ring.h"
+#include "../../source/render/Builder.h"
 
 #include <cmath>
 #include <cstdio>
@@ -303,6 +304,50 @@ int testFallback()
 
 //---------------------------------------------------------------------------
 
+int testGraticule()
+{
+	std::puts( "\nThe graticule marks every speaker, including the ones on the left" );
+
+	// A 5.1 layout has three speakers at negative azimuths. They arrive at the
+	// geometry as a negative parameter, which in the full circle has to wrap --
+	// and without the wrap every one of them was silently dropped.
+	Frame frame;
+	frame.channels = 6;
+	frame.layout   = Layout::surround51();
+
+	ViewParams view;
+	view.geometry = Geometry::Circular;
+	view.aspect   = 16.0f / 9.0f;
+
+	Mesh mesh;
+	buildGraticule( frame, view, mesh, 1.0f );
+
+	// Count the radial segments: they run from the inner radius to the rim, so
+	// their two endpoints differ in length. Ring segments do not.
+	int radials = 0, radialsOnTheLeft = 0;
+	for( size_t i = 0; i + 1 < mesh.vertices.size(); i += 2 )
+	{
+		const Vertex& a = mesh.vertices[ i ];
+		const Vertex& b = mesh.vertices[ i + 1 ];
+		const float   ra = std::sqrt( a.x * a.x + a.y * a.y );
+		const float   rb = std::sqrt( b.x * b.x + b.y * b.y );
+		if( std::fabs( ra - rb ) <= 0.2f )
+			continue;   // a ring segment, not a radial
+		++radials;
+		if( b.x < -0.05f )
+			++radialsOnTheLeft;
+	}
+	// Five speakers (the LFE has no direction) plus the centre mark, which
+	// coincides with the C channel -- so five distinct angles, six segments.
+	near( radials, 6.0, 0.0, "5.1 draws a radial for every non-LFE speaker" );
+
+	// L at -30 and Ls at -110: two RADIALS on the left. Counting any vertex on
+	// the left instead would pass on the ring alone, which is how the first
+	// version of this check managed to pass against the broken code.
+	near( radialsOnTheLeft, 2.0, 0.0, "two of those radials are on the left" );
+	return failures;
+}
+
 int testRing()
 {
 	std::puts( "\nThe ring drops the oldest, never the newest" );
@@ -320,10 +365,13 @@ int testRing()
 	check( ring.peekLatest( out.data(), 1024 ), "peek succeeds after overrun", 1, 1, 0 );
 	near( out[ 1023 ], 2559.0, 0.0, "last sample is the newest written" );
 	near( out[ 0 ], 1536.0, 0.0, "first sample is exactly one ring back" );
-	check( ring.dropped() == 1536, "drop count is exact", (double)ring.dropped(), 1536.0, 0 );
+	check( ring.overwritten() == 1536, "overwrite count is exact", (double)ring.overwritten(), 1536.0, 0 );
 	return failures;
 }
 } // namespace
+
+int checkParams( int& checks );
+int listDevices( const std::string& openName, double seconds );
 
 #if defined( __APPLE__ )
 int checkShaders();
@@ -356,8 +404,24 @@ int main( int argc, char** argv )
 		testLfe();
 	if( all || only == "--fallback" )
 		testFallback();
+	if( all || only == "--graticule" )
+		testGraticule();
+
 	if( all || only == "--ring" )
 		testRing();
+
+	if( all || only == "--params" )
+	{
+		std::puts( "\nWhat the host will be told about the parameters" );
+		failures += checkParams( checks );
+	}
+
+	if( only == "--devices" )
+	{
+		const std::string open = ( argc > 2 ) ? argv[ 2 ] : "";
+		const double      secs = ( argc > 3 ) ? std::atof( argv[ 3 ] ) : 3.0;
+		return listDevices( open, secs );
+	}
 
 	if( only == "--sheet" )
 	{

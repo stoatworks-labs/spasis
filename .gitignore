@@ -14,3 +14,6 @@
 
 # Local preview server config lives in the shared ~/.claude/launch.json
 /.claude/
+
+# Windows DLLs built in the Parallels guest, copied back through the share
+/out-windows/

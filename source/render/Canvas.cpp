@@ -91,7 +91,7 @@ void Canvas::deInitGL()
 	vboCapacity_ = 0;
 }
 
-void Canvas::render( const Mesh& mesh, const ViewParams& view, GLuint destFBO,
+void Canvas::render( const Mesh& mesh, const Mesh& graticule, const ViewParams& view, GLuint destFBO,
 					 GLsizei width, GLsizei height, float decay,
 					 const float foreground[ 4 ], const float background[ 4 ] )
 {
@@ -134,42 +134,11 @@ void Canvas::render( const Mesh& mesh, const ViewParams& view, GLuint destFBO,
 	}
 
 	//-- Draw the mesh additively on top ------------------------------------
-	if( !mesh.vertices.empty() )
+	glEnable( GL_BLEND );
+	glBlendFunc( GL_ONE, GL_ONE );
 	{
-		glEnable( GL_BLEND );
-		glBlendFunc( GL_ONE, GL_ONE );
-		glEnable( GL_PROGRAM_POINT_SIZE );
-
-		glBindVertexArray( vao_ );
-		glBindBuffer( GL_ARRAY_BUFFER, vbo_ );
-
-		const size_t bytes = mesh.vertices.size() * sizeof( Vertex );
-		if( bytes > vboCapacity_ )
-		{
-			// Grow only. The vertex count swings with the style (a particle
-			// build is twenty times a line build) and reallocating both ways
-			// would orphan a buffer every time the operator touched the
-			// control.
-			glBufferData( GL_ARRAY_BUFFER, bytes, mesh.vertices.data(), GL_STREAM_DRAW );
-			vboCapacity_ = bytes;
-		}
-		else
-		{
-			glBufferSubData( GL_ARRAY_BUFFER, 0, bytes, mesh.vertices.data() );
-		}
-
 		ffglex::ScopedShaderBinding shaderBinding( traceShader_.GetGLID() );
-		GLenum mode = GL_POINTS;
-		if( mesh.primitive == Primitive::LineStrip )
-			mode = GL_LINE_STRIP;
-		else if( mesh.primitive == Primitive::Triangles )
-			mode = GL_TRIANGLES;
-		traceShader_.Set( "pointMode", ( mode == GL_POINTS ) ? 1.0f : 0.0f );
-		glDrawArrays( mode, 0, (GLsizei)mesh.vertices.size() );
-
-		glBindVertexArray( 0 );
-		glBindBuffer( GL_ARRAY_BUFFER, 0 );
-		glDisable( GL_PROGRAM_POINT_SIZE );
+		drawMesh( mesh );
 	}
 
 	current_ = dst;
@@ -186,6 +155,54 @@ void Canvas::render( const Mesh& mesh, const ViewParams& view, GLuint destFBO,
 	compositeShader_.Set( "foreground", foreground[ 0 ], foreground[ 1 ], foreground[ 2 ], foreground[ 3 ] );
 	compositeShader_.Set( "background", background[ 0 ], background[ 1 ], background[ 2 ], background[ 3 ] );
 	quad_.Draw();
+
+	//-- The graticule, over the top ----------------------------------------
+	if( !graticule.vertices.empty() )
+	{
+		glEnable( GL_BLEND );
+		glBlendFunc( GL_ONE, GL_ONE );   // additive, like the trace it sits under
+		ffglex::ScopedShaderBinding graticuleBinding( traceShader_.GetGLID() );
+		drawMesh( graticule );
+	}
+}
+
+void Canvas::drawMesh( const Mesh& mesh )
+{
+	if( mesh.vertices.empty() )
+		return;
+
+	glEnable( GL_PROGRAM_POINT_SIZE );
+	glBindVertexArray( vao_ );
+	glBindBuffer( GL_ARRAY_BUFFER, vbo_ );
+
+	const size_t bytes = mesh.vertices.size() * sizeof( Vertex );
+	if( bytes > vboCapacity_ )
+	{
+		// Grow only. The vertex count swings with the style (a particle build is
+		// twenty times a line build) and reallocating both ways would orphan a
+		// buffer every time the operator touched the control.
+		glBufferData( GL_ARRAY_BUFFER, bytes, mesh.vertices.data(), GL_STREAM_DRAW );
+		vboCapacity_ = bytes;
+	}
+	else
+	{
+		glBufferSubData( GL_ARRAY_BUFFER, 0, bytes, mesh.vertices.data() );
+	}
+
+	GLenum mode = GL_POINTS;
+	if( mesh.primitive == Primitive::LineStrip )
+		mode = GL_LINE_STRIP;
+	else if( mesh.primitive == Primitive::Lines )
+		mode = GL_LINES;
+	else if( mesh.primitive == Primitive::Triangles )
+		mode = GL_TRIANGLES;
+
+	traceShader_.Set( "pointMode", ( mode == GL_POINTS ) ? 1.0f : 0.0f );
+	glDrawArrays( mode, 0, (GLsizei)mesh.vertices.size() );
+
+	glBindVertexArray( 0 );
+	glBindBuffer( GL_ARRAY_BUFFER, 0 );
+	glDisable( GL_PROGRAM_POINT_SIZE );
 }
 
 } // namespace spasis

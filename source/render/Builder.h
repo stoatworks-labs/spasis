@@ -60,4 +60,21 @@ void buildWidth( const Frame& frame, const ViewParams& view, Mesh& out );
 /// Tonal balance.
 void buildBalance( const Frame& frame, const ViewParams& view, Mesh& out );
 
+/**
+	The graticule: the instrument's own markings, drawn whether or not there is
+	a signal.
+
+	It is not decoration. Without it a plugin with no audio yet -- no device
+	chosen, a device with nothing routed to it, or one of the three directional
+	displays sitting on the host-FFT fallback that cannot feed them -- renders a
+	frame of pure black, which is indistinguishable from a broken plugin, an
+	unloaded plugin and a black clip. Every hardware meter these displays copy
+	has markings for the same reason.
+
+	`dim` is how bright it sits relative to the trace, and the caller drops it
+	when the display IS being fed, so the markings recede once there is
+	something to read.
+*/
+void buildGraticule( const Frame& frame, const ViewParams& view, Mesh& out, float dim );
+
 } // namespace spasis

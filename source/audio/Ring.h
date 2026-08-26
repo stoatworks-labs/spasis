@@ -126,7 +126,23 @@ public:
 		read_.store( write_.load( std::memory_order_acquire ), std::memory_order_release );
 	}
 
-	size_t dropped() const { return dropped_.load( std::memory_order_relaxed ); }
+	/**
+		Frames overwritten before the reader advanced past them.
+
+		**This is expected to grow continuously and is not an error count.** It
+		reads like one, which is why it says so here: the consumer uses
+		`peekLatest`, which deliberately does NOT advance the read cursor -- so
+		that consecutive display frames overlap and an FFT does not see a
+		different arbitrary phase each time. The read cursor therefore only ever
+		moves when the producer shoves it, and every frame older than one ring
+		is counted here whether or not anybody wanted it.
+
+		The first version of this was reported as "dropped" in the device probe
+		and looked alarming: a third of a second of audio "lost" every second on
+		a perfectly healthy device. It is a measure of how much history has
+		scrolled past, and nothing more.
+	*/
+	size_t overwritten() const { return dropped_.load( std::memory_order_relaxed ); }
 
 private:
 	std::vector< float >   data_;

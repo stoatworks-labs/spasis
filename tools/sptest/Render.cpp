@@ -237,6 +237,7 @@ int renderSheet( const std::string& directory, int channels )
 		view.aspect    = (float)kWidth / (float)kHeight;
 
 		Mesh                 mesh;
+		Mesh                 graticule;
 		std::vector< float > block;
 		const int            perFrame = kSampleRate / 60;
 
@@ -260,7 +261,8 @@ int renderSheet( const std::string& directory, int channels )
 			case Display::Balance: buildBalance( frame, view, mesh ); break;
 			}
 
-			canvas.render( mesh, view, target.fbo, kWidth, kHeight, 0.86f, foreground, background );
+			buildGraticule( frame, view, graticule, 0.14f );
+			canvas.render( mesh, graticule, view, target.fbo, kWidth, kHeight, 0.86f, foreground, background );
 		}
 
 		std::vector< unsigned char > pixels( (size_t)kWidth * kHeight * 4 );

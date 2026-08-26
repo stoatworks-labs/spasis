@@ -77,6 +77,7 @@ private:
 	Analyser  analyser_;
 	Canvas    canvas_;
 	Mesh      mesh_;
+	Mesh      graticule_;
 
 	std::vector< std::string > deviceNames_;   ///< index 0 is the host-FFT entry
 	int                        openedIndex_ = -1;

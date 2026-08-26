@@ -356,4 +356,101 @@ void buildSpeakers( const Frame& frame, const ViewParams& view, Mesh& out )
 	out.primitive = Primitive::Triangles;
 }
 
+
+//---------------------------------------------------------------------------
+
+namespace
+{
+void segment( Mesh& mesh, Vertex a, Vertex b, float intensity )
+{
+	a.intensity = intensity;
+	b.intensity = intensity;
+	a.size = b.size = 1.0f;
+	mesh.vertices.push_back( a );
+	mesh.vertices.push_back( b );
+}
+
+/// A ring at radius `v`, as disconnected segments so it can share one draw with
+/// the straight markings.
+void ring( Mesh& mesh, float v, const ViewParams& view, float intensity, int steps = 96 )
+{
+	ViewParams unit = view;
+	unit.gain       = 1.0f;   // the graticule is fixed, never scaled by display gain
+	for( int i = 0; i < steps; ++i )
+	{
+		const float t0 = (float)i / (float)steps;
+		const float t1 = (float)( i + 1 ) / (float)steps;
+		segment( mesh, place( t0, v, unit ), place( t1, v, unit ), intensity );
+	}
+}
+} // namespace
+
+void buildGraticule( const Frame& frame, const ViewParams& view, Mesh& out, float dim )
+{
+	out.clear();
+	out.primitive = Primitive::Lines;
+	if( dim <= 0.0f )
+		return;
+
+	ViewParams unit = view;
+	unit.gain       = 1.0f;
+
+	if( view.geometry == Geometry::Raster )
+	{
+		// A baseline and a few horizontal rules. Nothing circular to draw, and
+		// a grid dense enough to be a grid would compete with the trace.
+		for( int i = 0; i <= 4; ++i )
+		{
+			const float v = (float)i / 4.0f;
+			segment( out, place( 0.0f, v, unit ), place( 1.0f, v, unit ),
+					 dim * ( ( i == 0 ) ? 1.0f : 0.4f ) );
+		}
+		return;
+	}
+
+	const int steps = ( view.geometry == Geometry::Circular ) ? 96 : 48;
+	ring( out, 1.0f, view, dim, steps );
+	if( view.innerRadius > 0.001f )
+		ring( out, 0.0f, view, dim * 0.7f, steps / 2 );
+
+	// The radial markings. For the two circular geometries these are the angles
+	// an engineer reads the instrument against: dead centre, the two speaker
+	// positions, and hard left/right. They are taken from the LAYOUT rather than
+	// drawn at fixed angles, so a 5.1 rose gets marks where its speakers are.
+	const float sweep = ( view.geometry == Geometry::Circular ) ? ( 2.0f * kPi ) : kPi;
+	const float start = ( view.geometry == Geometry::Circular ) ? 0.0f : ( -kPi * 0.5f );
+
+	std::vector< float > angles;
+	angles.push_back( 0.0f );
+	for( const ChannelPlacement& p : frame.layout.channels )
+		if( !p.lfe )
+			angles.push_back( p.azimuth );
+	if( frame.layout.count() <= 2 )
+	{
+		// Stereo also gets the horizontal, which is where an out-of-phase
+		// signal lies and the one line anybody actually looks for.
+		angles.push_back( kPi * 0.5f );
+		angles.push_back( -kPi * 0.5f );
+	}
+
+	for( float a : angles )
+	{
+		float t = ( a - start ) / sweep;
+
+		// Azimuths are signed -- 0 ahead, NEGATIVE to the left -- so every
+		// speaker on the left half gives a negative t. In the full circle that
+		// is a legal position and has to wrap; in a half circle it is genuinely
+		// off the display. Testing the range without wrapping first silently
+		// dropped every mark on the left, which on a 5.1 layout is half of them
+		// and reads as a lopsided graticule rather than as a bug.
+		if( view.geometry == Geometry::Circular )
+			t -= std::floor( t );
+		else if( t < -0.001f || t > 1.001f )
+			continue;
+
+		segment( out, place( t, 0.0f, unit ), place( t, 1.0f, unit ),
+				 dim * ( ( std::fabs( a ) < 0.001f ) ? 0.9f : 0.45f ) );
+	}
+}
+
 } // namespace spasis

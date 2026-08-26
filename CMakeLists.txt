@@ -138,7 +138,7 @@ spasis_add_plugin(SpasisBalance source/sources/SpasisBalance.cpp
 # geometry mapping is on the CPU -- see render/View.h.
 #-----------------------------------------------------------------------------
 if(SPASIS_BUILD_TOOLS)
-    add_executable(sptest tools/sptest/Invariants.cpp)
+    add_executable(sptest tools/sptest/Invariants.cpp tools/sptest/Params.cpp tools/sptest/Devices.cpp)
     if(APPLE)
         target_sources(sptest PRIVATE tools/sptest/Shaders.cpp tools/sptest/Render.cpp)
         # zlib ships with the OS, which is why the PNG writer is fifty lines in

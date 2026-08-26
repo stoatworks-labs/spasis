@@ -8,11 +8,13 @@
 > width reading stops agreeing with `|S|/(|M|+|S|)` at any landmark. Both drive
 > the analysis code that ships.
 >
-> **It has been rendered and measured offline, and it has not yet run a show.**
-> The four bundles instantiate, render and pass the fleet's instantiate sweep in
-> a headless context; live capture from a real device on a real desk is the part
-> no offline harness can stand in for. Check it in your own rig before trusting
-> it in front of an audience.
+> **It runs in Resolume Arena on macOS and Windows, and it has not yet run a
+> show.** All four sources load and register in Arena 7.27.1 on both platforms,
+> expose their controls correctly, and have captured live audio from a real
+> CoreAudio device. What has *not* happened is a real desk feeding a real
+> multichannel layout for a real audience — and first contact with a live rig
+> found five bugs in a plugin that had already passed three hundred offline
+> checks. Check it in your own rig before trusting it in front of an audience.
 
 Four audio sources for Resolume Arena and Avenue that draw the **shape of the
 stereo and surround field** — where the energy is pointing, how wide each part
@@ -63,8 +65,14 @@ Input** at it and pick the **Speakers** layout that matches.
 
 Left on its default, **Audio Input** is `Resolume (mono)` and the host's own FFT
 drives it. That path needs no setup at all and works in any host — and it can
-only show **Balance**. The other three say so on screen rather than drawing an
-empty instrument.
+only show **Balance**.
+
+The other three then draw their **graticule at full brightness and nothing
+else**: an empty instrument rather than a black frame. The same happens when a
+chosen device is delivering digital silence — no permission, an unpatched Dante
+receiver, a loopback nothing is routed to. FFGL gives a plugin no way to draw
+text and no window, so spasis cannot say *why* in words; what it can do is not
+be indistinguishable from a plugin that has crashed.
 
 ## Speaker layouts
 

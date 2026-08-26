@@ -20,7 +20,20 @@ constexpr float kPi = 3.14159265358979323846f;
 /// card can present dozens of inputs -- the list is capped rather than grown
 /// because a parameter whose element count changes is a parameter Resolume has
 /// to be told about, and saved compositions index into it.
-constexpr int kMaxDevices = 24;
+constexpr int kMaxDevices = 15;
+
+/// What an unused slot in that list is called.
+///
+/// FFGL fixes an option parameter's element count when the parameter is
+/// declared, and Resolume saves the chosen INDEX into the composition -- so the
+/// list cannot be sized to the devices actually present without the count (and
+/// therefore the meaning of every saved index) changing when something is
+/// plugged in. Spare slots have to exist, and Rescan fills them.
+///
+/// They must not be left EMPTY, which is what shipped first: Resolume renders
+/// an empty element name as a blank row, so the menu ended in a run of thirteen
+/// blank lines that looked like a broken plugin.
+constexpr const char* kEmptySlot = "(none)";
 
 void hsbToRgb( float h, float s, float b, float out[ 3 ] )
 {
@@ -49,12 +62,29 @@ SpasisPlugin::SpasisPlugin( Display display ) : display_( display )
 	SetMinInputs( 0 );
 	SetMaxInputs( 0 );
 
+	// Defaults FIRST. SetParamInfof declares a parameter using
+	// GetFloatParameter( index ) as its default -- it reads `params_` -- so a
+	// block of assignments after the declarations sets the plugin's idea of the
+	// value and never reaches the host. Five controls shipped at zero that way,
+	// and it is invisible offline because the harness reads the plugin's own
+	// state rather than the host's.
+	params_[ PT_GAIN ]       = 0.5f;
+	params_[ PT_THICKNESS ]  = 0.3f;
+	params_[ PT_INNER ]      = 0.12f;
+	params_[ PT_ROTATION ]   = 0.5f;
+	params_[ PT_PERSIST ]    = 0.6f;
+	params_[ PT_HUE ]        = 0.5f;
+	params_[ PT_SATURATION ] = 0.65f;
+	params_[ PT_BRIGHTNESS ] = 1.0f;
+	params_[ PT_BACKGROUND ] = 0.0f;
+	params_[ PT_CHANNELS ]   = 2.0f;
+
 	refreshDevices();
 
 	SetOptionParamInfo( PT_INPUT, "Audio Input", kMaxDevices + 1, 0.0f );
 	for( int i = 0; i <= kMaxDevices; ++i )
 	{
-		const char* label = ( i < (int)deviceNames_.size() ) ? deviceNames_[ i ].c_str() : "";
+		const char* label = ( i < (int)deviceNames_.size() ) ? deviceNames_[ i ].c_str() : kEmptySlot;
 		SetParamElementInfo( PT_INPUT, i, label, (float)i );
 	}
 
@@ -110,17 +140,6 @@ SpasisPlugin::SpasisPlugin( Display display ) : display_( display )
 	for( const auto& button : stoatworks::about::buttons() )
 		SetParamInfo( aboutId++, button.label, FF_TYPE_EVENT, false );
 
-	params_[ PT_GAIN ]        = 0.5f;
-	params_[ PT_THICKNESS ]   = 0.3f;
-	params_[ PT_INNER ]       = 0.12f;
-	params_[ PT_ROTATION ]    = 0.5f;
-	params_[ PT_PERSIST ]     = 0.6f;
-	params_[ PT_HUE ]         = 0.5f;
-	params_[ PT_SATURATION ]  = 0.65f;
-	params_[ PT_BRIGHTNESS ]  = 1.0f;
-	params_[ PT_BACKGROUND ]  = 0.0f;
-	params_[ PT_CHANNELS ]    = 2.0f;
-	params_[ PT_LOBES ]       = ( display == Display::Rose ) ? 0.0f : 0.0f;
 }
 
 void SpasisPlugin::refreshDevices()
@@ -324,6 +343,22 @@ FFResult SpasisPlugin::ProcessOpenGL( ProcessOpenGLStruct* gl )
 	case Display::Balance: buildBalance( *frame, view, mesh_ ); break;
 	}
 
+	/**
+		The graticule, and how bright it is.
+
+		Bright when the display has nothing to show, and faint once it has --
+		which makes the three cases that produce an empty instrument
+		distinguishable from a broken plugin: no device chosen, a device
+		delivering digital silence, and one of the three directional displays
+		sitting on the host-FFT fallback that cannot feed it. The plugin cannot
+		say WHY in words (FFGL has no way to draw text and no window), but an
+		empty instrument with its markings visible is at least obviously an
+		instrument.
+	*/
+	const bool starved = !frame->live && display_ != Display::Balance;
+	const bool quiet   = capture_.state() == CaptureState::Silent;
+	buildGraticule( *frame, view, graticule_, ( starved || quiet ) ? 0.55f : 0.14f );
+
 	//-- Draw ----------------------------------------------------------------
 	float rgb[ 3 ];
 	hsbToRgb( params_[ PT_HUE ], params_[ PT_SATURATION ], params_[ PT_BRIGHTNESS ], rgb );
@@ -337,7 +372,7 @@ FFResult SpasisPlugin::ProcessOpenGL( ProcessOpenGLStruct* gl )
 	const float halfLife = 0.02f + params_[ PT_PERSIST ] * params_[ PT_PERSIST ] * 2.0f;
 	const float decay    = std::exp( -frameInterval() / halfLife );
 
-	canvas_.render( mesh_, view, gl != nullptr ? gl->HostFBO : 0, width, height,
+	canvas_.render( mesh_, graticule_, view, gl != nullptr ? gl->HostFBO : 0, width, height,
 					decay, foreground, background );
 
 	saved.Restore();
@@ -359,7 +394,7 @@ FFResult SpasisPlugin::SetFloatParameter( unsigned int index, float value )
 			refreshDevices();
 			for( int i = 0; i <= kMaxDevices; ++i )
 				SetParamElementInfo( PT_INPUT, i,
-									 ( i < (int)deviceNames_.size() ) ? deviceNames_[ i ].c_str() : "",
+									 ( i < (int)deviceNames_.size() ) ? deviceNames_[ i ].c_str() : kEmptySlot,
 									 (float)i );
 			RaiseParamEvent( PT_INPUT, FF_EVENT_FLAG_ELEMENTS );
 			inputDirty_ = true;

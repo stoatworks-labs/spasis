@@ -157,6 +157,36 @@ destroys the instance on the first `FF_FAIL`; `FFGLFBO::Release` leaks its
 colour texture; and the plugin registration must live outside a STATIC library
 or the linker drops it.
 
+### The host's view of the parameters is not the plugin's view
+
+Two bugs shipped past a clean build, three hundred invariant checks, a
+twelve-picture contact sheet and the fleet's instantiate sweep, and both were
+found by reading Resolume's own parameter list over REST:
+
+**`SetParamInfof` declares a parameter using `GetFloatParameter( index )` as its
+default.** It reads `params_`. A tidy block of assignments *after* the
+declarations therefore sets the plugin's idea of the value and never reaches the
+host — five controls opened at zero in every composition. The harness could not
+see it because the harness reads `params_` too.
+
+**An option element with an empty name draws a blank row.** The device dropdown
+is padded with spare slots so that Rescan has somewhere to put a newly plugged-in
+interface, and the spares arrived unnamed: a menu ending in thirteen blank lines.
+
+Both are now checked by `sptest --params`, which reads the declared `ParamInfo`
+table rather than `params_` — the same table the host reads. It also enforces the
+16-character name limit, so that trap is caught before a release rather than by
+a screenshot.
+
+### Azimuth is signed, so half the speakers are at a negative angle
+
+`ChannelPlacement::azimuth` is 0 ahead and **negative to the left**. Converting
+one to the geometry's 0..1 plot parameter therefore yields a negative number for
+every speaker on the left, and in the full circle that is a legal position that
+has to **wrap**. Range-checking it instead silently dropped every graticule mark
+on the left of a 5.1 layout — three of five — which reads as a lopsided design
+choice rather than as a bug. `sptest --graticule` counts them.
+
 ### A bounds check after the About branch is dead code
 
 `if( index >= PT_ABOUT_FIRST )` catches every id at or above the About block,
@@ -202,6 +232,21 @@ to three that they can. `bandCorr` is zero above stereo and documented as such.
 
 **No smoothing of the field trace.** It is drawn at whatever rate the analysis
 block gives, and the persistence does the rest — which is what a phosphor does.
+
+**No text on screen.** FFGL gives a plugin no window and no way to draw text, so
+the three states that produce an empty instrument — no device chosen, a device
+delivering digital silence, and a directional display on the host-FFT fallback —
+cannot be explained in words on the output. They are distinguished from a
+crashed plugin by the graticule brightening instead, which is the most an API
+with no text can honestly do. The diagnostics log carries the actual reason.
+
+**Opening the device off the render thread.** `Capture::open()` runs inside
+`ProcessOpenGL`, so choosing an input blocks Arena's render thread for as long
+as CoreAudio takes — long enough, measured, that parameter writes issued in that
+window are dropped by the host. It is a one-off cost when the operator picks a
+device and it has not yet been worth a worker thread and the state machine that
+comes with one, but it is the next thing to fix if anyone changes device during
+a show.
 
 ---
 

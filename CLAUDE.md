@@ -38,6 +38,17 @@ Read `AGENTS.md` before changing the field law or the analysis.
 - **`gl_PointCoord` is undefined outside `GL_POINTS`.** On Apple's Metal GL it
   reads (0,0), which zeroes a radial falloff — every line and bar renders black.
   The trace shader branches on a `pointMode` uniform.
+- **Set `params_[]` before declaring the parameter.** `SetParamInfof` declares
+  a parameter using `GetFloatParameter( index )` as its default, so a block of
+  assignments after the declarations sets the plugin's idea of the value and
+  never reaches the host. Five controls shipped at zero that way.
+- **An option element must never be left unnamed.** Resolume draws a blank row.
+  Spare device slots are labelled `(none)`.
+- **Azimuths are signed, and a negative one is on the left.** In the full circle
+  the plot parameter has to WRAP, not be range-checked — checking dropped every
+  graticule mark on the left half of a 5.1 layout.
+- `Ring::overwritten()` is **not** an error count and grows continuously by
+  design; the consumer never advances the read cursor.
 - Devices are remembered **by name, never by index**. An index is a position in
   a list that changes whenever anything is plugged in.
 - A parameter change must not clear the capture ring; a *geometry* change must

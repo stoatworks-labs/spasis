@@ -54,6 +54,7 @@ enum class Primitive
 {
 	Points,
 	LineStrip,
+	Lines,       ///< disconnected segments -- the graticule, and only that
 	Triangles,
 };
 
