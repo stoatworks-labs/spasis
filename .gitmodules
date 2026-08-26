@@ -1,0 +1,6 @@
+[submodule "external/ffgl"]
+	path = external/ffgl
+	url = https://github.com/resolume/ffgl
+[submodule "external/miniaudio"]
+	path = external/miniaudio
+	url = https://github.com/mackron/miniaudio
