@@ -89,6 +89,42 @@ vertical axis, out-of-phase flat on the horizontal. The generalised law and the
 instrument every engineer already owns are the same thing, and they are only the
 same thing at 45°.
 
+<!-- downloads:start -->
+
+## Download
+
+No release has been published yet. This block is written by
+`stoatworks-backend/release/gen-downloads.py` from the releases API once a tag
+exists, so it is a placeholder rather than a hand-maintained table — do not
+fill it in by hand.
+
+<!-- downloads:end -->
+
+## Install
+
+Drop all four bundles (macOS) or all four `.dll`s (Windows) into Resolume's
+extra effects folder and restart Resolume:
+
+- macOS — `~/Documents/Resolume Arena/Extra Effects/`
+- Windows — `Documents\Resolume Arena\Extra Effects\`
+
+Use `Resolume Avenue` in place of `Resolume Arena` for Avenue. They appear as
+four **sources** — not effects — named **Spasis Field**, **Spasis Rose**,
+**Spasis Width** and **Spasis Balance**.
+
+Install all four or install one; they share no state and none of them needs the
+others. What they do share is the **Audio Input** control, and three of the four
+show nothing but their graticule until you point it at a real capture device —
+see [Why it captures its own audio](#why-it-captures-its-own-audio) above.
+
+On macOS the microphone permission belongs to **Resolume**, not to the plugin,
+and a host that does not have it is not given an error: the device opens, runs,
+and returns digital zero for ever. That is indistinguishable from an unpatched
+Dante receiver or a loopback nothing is routed to, so spasis calls all three
+what they are — silence — after three seconds of bit-exact zero. If a device is
+selected and the display says it is silent, check Resolume under **System
+Settings › Privacy & Security › Microphone** before suspecting the routing.
+
 ## Building
 
 ```bash
