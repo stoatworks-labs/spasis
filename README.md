@@ -100,8 +100,8 @@ same thing at 45°.
 
 | Build | Download | Size |
 | --- | --- | --- |
-| Universal (Apple Silicon + Intel) · .dmg disk image | [`spasis-0.1.0-macos-universal.dmg`](https://github.com/stoatworks-labs/spasis/releases/download/v0.1.0/spasis-0.1.0-macos-universal.dmg) | 2.2 MB |
-| Universal (Apple Silicon + Intel) · .zip archive | [`spasis-macos-universal.zip`](https://github.com/stoatworks-labs/spasis/releases/latest/download/spasis-macos-universal.zip) | 1.7 MB |
+| Universal (Apple Silicon + Intel) · .dmg disk image | [`spasis-0.1.0-macos-universal.dmg`](https://github.com/stoatworks-labs/spasis/releases/download/v0.1.0/spasis-0.1.0-macos-universal.dmg) | 2.0 MB |
+| Universal (Apple Silicon + Intel) · .zip archive | [`spasis-macos-universal.zip`](https://github.com/stoatworks-labs/spasis/releases/latest/download/spasis-macos-universal.zip) | 1.8 MB |
 
 </details>
 
@@ -117,7 +117,7 @@ same thing at 45°.
 
 All builds, checksums and release notes: [github.com/stoatworks-labs/spasis/releases](https://github.com/stoatworks-labs/spasis/releases).
 
-The Windows builds are unsigned, so SmartScreen warns once.
+macOS builds are signed and notarised and open normally. The Windows builds are unsigned, so SmartScreen warns once.
 
 <!-- downloads:end -->
 
