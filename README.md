@@ -93,10 +93,31 @@ same thing at 45°.
 
 ## Download
 
-No release has been published yet. This block is written by
-`stoatworks-backend/release/gen-downloads.py` from the releases API once a tag
-exists, so it is a placeholder rather than a hand-maintained table — do not
-fill it in by hand.
+**[v0.1.0](https://github.com/stoatworks-labs/spasis/releases/tag/v0.1.0)** — prebuilt for macOS and Windows. Pick your platform:
+
+<details>
+<summary><b>macOS</b> — Universal (Apple Silicon + Intel)</summary>
+
+| Build | Download | Size |
+| --- | --- | --- |
+| Universal (Apple Silicon + Intel) · .dmg disk image | [`spasis-0.1.0-macos-universal.dmg`](https://github.com/stoatworks-labs/spasis/releases/download/v0.1.0/spasis-0.1.0-macos-universal.dmg) | 2.2 MB |
+| Universal (Apple Silicon + Intel) · .zip archive | [`spasis-macos-universal.zip`](https://github.com/stoatworks-labs/spasis/releases/latest/download/spasis-macos-universal.zip) | 1.7 MB |
+
+</details>
+
+<details>
+<summary><b>Windows</b> — x64</summary>
+
+| Build | Download | Size |
+| --- | --- | --- |
+| x64 · .exe installer | [`spasis-0.1.0-windows-x86_64-setup.exe`](https://github.com/stoatworks-labs/spasis/releases/download/v0.1.0/spasis-0.1.0-windows-x86_64-setup.exe) | 306 KB |
+| x64 · .zip archive | [`spasis-windows-x86_64.zip`](https://github.com/stoatworks-labs/spasis/releases/latest/download/spasis-windows-x86_64.zip) | 812 KB |
+
+</details>
+
+All builds, checksums and release notes: [github.com/stoatworks-labs/spasis/releases](https://github.com/stoatworks-labs/spasis/releases).
+
+The Windows builds are unsigned, so SmartScreen warns once.
 
 <!-- downloads:end -->
 
