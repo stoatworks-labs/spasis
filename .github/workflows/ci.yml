@@ -39,6 +39,18 @@ jobs:
       - name: Build
         run: cmake --build build --config Release --parallel
 
+      - name: Shaders
+        # glslc, not the runner's GL driver. The driver half of the shader
+        # checking (`sptest --shaders`) cannot run here at all: a GitHub macOS
+        # runner refuses an accelerated 4.1 core context, which is what the
+        # first run of this workflow found. So the shaders are compiled
+        # statically instead, and --require makes a missing glslc a failure
+        # rather than a silent skip -- a check that quietly looks at nothing is
+        # worse than no check.
+        run: |
+          brew install shaderc
+          tools/check-shaders.sh --require
+
       - name: Invariants
         # This is the check the repo exists for. `sptest` links the same OBJECT
         # library the four bundles do, so what it measures here is what ships:
@@ -47,12 +59,10 @@ jobs:
         # a level and no direction, the host-FFT fallback refusing to invent a
         # field it cannot know, and the capture ring's drop accounting.
         #
-        # Bare `sptest` also compiles every shader through the runner's own GL
-        # driver, so this step needs an accelerated CGL context. If a future
-        # runner image cannot give it one, split the GL half out rather than
-        # deleting the step -- a skipped shader check presents downstream as
-        # "the plugin draws nothing".
-        run: ./build/sptest
+        # --offline is --all minus the groups that need a GL context, defined in
+        # the harness rather than as a list of flags here, so a group added
+        # later is picked up instead of being silently left out.
+        run: ./build/sptest --offline
 
       - name: The plugins register and their entry points survived the link
         # A plugin that compiles and links can still be inert: if the
