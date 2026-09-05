@@ -1,0 +1,131 @@
+name: ci
+
+# A status check on every pull request, so a Dependabot bump or an outside PR
+# arrives with something to gate a merge on rather than only a tag-driven
+# release that runs after the fact.
+#
+# macOS only. The CMakeLists branches on APPLE and WIN32, the Windows job wants
+# GLEW from vcpkg, and that is slow to put in front of every pull request. The
+# release workflow covers Windows on a `workflow_dispatch`, which is the cheap
+# way to check that half before tagging.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: macOS
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # The FFGL SDK and miniaudio are submodules. Without this, CMake stops
+          # at configure time with the FATAL_ERROR the CMakeLists raises by hand
+          # -- which reads like a broken repo rather than a missing flag.
+          submodules: recursive
+
+      - name: Configure
+        # arm64 only, unlike the release build's universal slice: a source break
+        # is not architecture-specific, and the second slice doubles the build
+        # for no extra signal.
+        run: >
+          cmake -B build
+          -DCMAKE_BUILD_TYPE=Release
+          -DCMAKE_OSX_ARCHITECTURES=arm64
+          -DSPASIS_BUILD_TOOLS=ON
+
+      - name: Build
+        run: cmake --build build --config Release --parallel
+
+      - name: Shaders
+        # glslc, not the runner's GL driver. The driver half of the shader
+        # checking (`sptest --shaders`) cannot run here at all: a GitHub macOS
+        # runner refuses an accelerated 4.1 core context, which is what the
+        # first run of this workflow found. So the shaders are compiled
+        # statically instead, and --require makes a missing glslc a failure
+        # rather than a silent skip -- a check that quietly looks at nothing is
+        # worse than no check.
+        run: |
+          brew install shaderc
+          tools/check-shaders.sh --require
+
+      - name: Invariants
+        # This is the check the repo exists for. `sptest` links the same OBJECT
+        # library the four bundles do, so what it measures here is what ships:
+        # the FFT against a direct DFT, the field law reproducing the classic
+        # goniometer at ±45°, width against |S|/(|M|+|S|), the LFE contributing
+        # a level and no direction, the host-FFT fallback refusing to invent a
+        # field it cannot know, and the capture ring's drop accounting.
+        #
+        # --offline is --all minus the groups that need a GL context, defined in
+        # the harness rather than as a list of flags here, so a group added
+        # later is picked up instead of being silently left out.
+        run: ./build/sptest --offline
+
+      - name: The plugins register and their entry points survived the link
+        # A plugin that compiles and links can still be inert: if the
+        # registration translation unit is dropped, or plugMain is not exported,
+        # the host loads the bundle and reports that it contains no plugins.
+        # Both are cheap to assert and neither needs a GPU.
+        #
+        # Each ID is checked in its OWN bundle rather than against the four
+        # concatenated. FFGL resolves one plugMain per binary, so a build that
+        # linked every registration into one bundle and left the other three
+        # empty would pass a pooled check and fail in the host.
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          expect_id() {   # expect_id <bundle name> <four-character id>
+            local name="$1" id="$2"
+            local bundle="build/$name.bundle"
+            local binary="$bundle/Contents/MacOS/$name"
+
+            [ -d "$bundle" ] || { echo "::error::$bundle was not produced"; exit 1; }
+            [ -f "$binary" ] || { echo "::error::no executable at $binary"; exit 1; }
+
+            # Captured and matched with `case`, never `... | grep -q`. Actions
+            # runs `shell: bash` as `bash -eo pipefail`, and a `grep -q` that
+            # FINDS its match exits immediately -- the writer upstream takes
+            # SIGPIPE and the pipeline fails, so a correct binary fails the
+            # build. Size-dependent, so it bites the bigger binary first.
+            local symbols; symbols=$( nm -gU "$binary" )
+            case "$symbols" in
+              *_plugMain*) ;;
+              *) echo "::error::$name exports no plugMain -- the host will not load it"; exit 1 ;;
+            esac
+
+            local strings; strings=$( strings "$binary" )
+            case "$strings" in
+              *"$id"*) ;;
+              *) echo "::error::$id is not in $name -- its registration TU was dropped"; exit 1 ;;
+            esac
+
+            # The name the host shows in its browser. A bundle that loads under
+            # the wrong name is not obviously broken to anyone reading a build
+            # log, and is very obviously broken to an operator looking for it.
+            local declared; declared=$( /usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' \
+              "$bundle/Contents/Info.plist" )
+            [ "$declared" = "$name" ] || {
+              echo "::error::$name declares CFBundleExecutable '$declared'"; exit 1; }
+
+            echo "  ok: $name ($id)"
+          }
+
+          expect_id "Spasis Field"   SP01
+          expect_id "Spasis Rose"    SP02
+          expect_id "Spasis Width"   SP03
+          expect_id "Spasis Balance" SP04
+
+          # Four and not "at least four": a fifth bundle appearing here means a
+          # target was added without a registration id being reserved for it.
+          count=$( find build -maxdepth 1 -name '*.bundle' -type d | wc -l | tr -d ' ' )
+          [ "$count" = "4" ] || { echo "::error::expected 4 bundles, found $count"; exit 1; }
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: spasis-macos-arm64
+          path: build/*.bundle
+          if-no-files-found: error

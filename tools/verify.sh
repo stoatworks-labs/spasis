@@ -8,6 +8,12 @@ set -euo pipefail
 cd "$( dirname "$0" )/.."
 BUILD="${BUILD_DIR:-build}"
 
+echo
+echo "== shaders =="
+# The static half, glslc, which needs no GPU. The driver half is part of sptest
+# below. Both run here; CI can only run this one.
+tools/check-shaders.sh
+
 echo "== configure and build =="
 cmake -B "$BUILD" -DCMAKE_BUILD_TYPE=Release > /dev/null
 # Deliberately NOT piped into head/grep: a reader that exits early SIGPIPEs the

@@ -384,15 +384,36 @@ int renderSheet( const std::string&, int ) { return 0; }
 int main( int argc, char** argv )
 {
 	std::string only = ( argc > 1 ) ? argv[ 1 ] : "";
-	const bool  all  = only.empty() || only == "--all";
 
-	if( all || only == "--shaders" )
+	/*
+		`--offline` is everything that does not need a GL context.
+
+		A GitHub macOS runner cannot create an accelerated 4.1 core context, so
+		bare `sptest` there reports "could not create a 4.1 core context" and
+		fails a build in which nothing is wrong. Rather than have CI name the
+		groups it wants -- a list that goes stale silently the first time a
+		group is added -- `--offline` is defined as `--all` minus the GL ones,
+		at the one place that knows which those are.
+
+		The shaders are still checked on such a machine, by tools/check-shaders.sh,
+		which compiles them with glslc and needs no driver. That is a different
+		check rather than a substitute: only a real driver can tell you that
+		Apple's Metal GL disagrees with the compiler. So this says so out loud
+		rather than letting a green run be read as one that checked them.
+	*/
+	const bool offline = ( only == "--offline" );
+	const bool all     = only.empty() || only == "--all" || offline;
+
+	if( ( all && !offline ) || only == "--shaders" )
 	{
 		std::puts( "Every shader compiles on this driver" );
 		const int bad = checkShaders();
 		checks += 5;
 		failures += bad;
 	}
+	else if( offline )
+		std::puts( "Shaders NOT checked against a driver -- offline run\n"
+		           "  (tools/check-shaders.sh compiles them with glslc instead)" );
 
 	if( all || only == "--fft" )
 		testFFT();

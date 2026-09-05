@@ -1,3 +1,8 @@
-external/stb/*     linguist-vendored
-external/dr_libs/* linguist-vendored
-external/openfx/*  linguist-vendored
+# Keep the vendored SDKs out of the language statistics. Both are submodules, so
+# linguist already ignores them -- this is here so that a future dependency that
+# is vendored in-tree rather than as a submodule is covered from the start.
+#
+# It named external/stb, external/dr_libs and external/openfx until v0.1.0. None
+# of the three has ever existed in this repo; the file arrived from a sibling and
+# nothing notices a linguist rule that matches no path.
+external/* linguist-vendored
