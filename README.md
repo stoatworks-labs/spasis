@@ -89,6 +89,18 @@ vertical axis, out-of-phase flat on the horizontal. The generalised law and the
 instrument every engineer already owns are the same thing, and they are only the
 same thing at 45°.
 
+[![Spasis — the shape of the stereo and surround field](docs/video-thumb.png)](https://www.youtube.com/watch?v=ADnNv8YfdMQ)
+
+*[Watch it](https://www.youtube.com/watch?v=ADnNv8YfdMQ) — 49 seconds, all four
+displays. Every frame is the real plugin's output: an FFGL plugin has no window,
+so the footage is rendered by the project's own offline harness
+(`sptest --movie`) rather than filmed off a screen, and the audio driving it is
+the synthetic programme in that harness rather than a mix.*
+
+**Try it in your browser:** [spasis-demo.stoatworks-labs.com](https://spasis-demo.stoatworks-labs.com)
+— the four displays running in WebGL2, with every control the plugins declare.
+It has no capture device, so it runs that same synthetic programme.
+
 <!-- downloads:start -->
 
 ## Download
