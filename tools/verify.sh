@@ -29,6 +29,30 @@ echo "== contact sheet =="
 mkdir -p docs/sheet
 "./$BUILD/sptest" --sheet docs/sheet 2
 
+echo
+echo "== movie mode =="
+# The video pipeline's only entry point, smoke-tested by byte count rather than
+# by eye. A --movie that silently emits nothing still lets ffmpeg "succeed" with
+# a zero-length clip, and the first sign would be a black shot in a cut video.
+if [[ "$( uname -s )" == "Darwin" ]]; then
+	movie_bytes="$( "./$BUILD/sptest" --movie field-circle-scope 0.2 2 320 180 0.5 \
+		2>/dev/null | wc -c | tr -d ' ' )"
+	expect=$(( 12 * 320 * 180 * 4 ))
+	if [[ "$movie_bytes" == "$expect" ]]; then
+		printf '   12 frames, %s bytes, exact\n' "$movie_bytes"
+	else
+		printf '   expected %s bytes, got %s\n' "$expect" "$movie_bytes"
+		exit 1
+	fi
+	# An unknown shot must FAIL rather than emit a default, or a typo in a shot
+	# name in render.py becomes a video of the wrong display.
+	if "./$BUILD/sptest" --movie not-a-shot 0.1 >/dev/null 2>&1; then
+		echo "   an unknown shot was accepted"
+		exit 1
+	fi
+	printf '   an unknown shot is refused\n'
+fi
+
 if [[ "$( uname -s )" == "Darwin" ]]; then
 	echo
 	echo "== universal binaries =="

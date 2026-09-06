@@ -376,9 +376,12 @@ int listDevices( const std::string& openName, double seconds );
 #if defined( __APPLE__ )
 int checkShaders();
 int renderSheet( const std::string& directory, int channels );
+int renderMovie( const std::string& shot, double seconds, int channels,
+                 int width, int height, float hue );
 #else
 int checkShaders() { return 0; }
 int renderSheet( const std::string&, int ) { return 0; }
+int renderMovie( const std::string&, double, int, int, int, float ) { return 0; }
 #endif
 
 int main( int argc, char** argv )
@@ -442,6 +445,25 @@ int main( int argc, char** argv )
 		const std::string open = ( argc > 2 ) ? argv[ 2 ] : "";
 		const double      secs = ( argc > 3 ) ? std::atof( argv[ 3 ] ) : 3.0;
 		return listDevices( open, secs );
+	}
+
+	// Before --sheet, and before anything reaches stdout: this mode's stdout IS
+	// the frame stream, so the summary line at the bottom of main would land in
+	// the middle of the video.
+	//
+	//   sptest --movie <shot> [seconds] [channels] [width] [height] [hue]
+	//
+	// The shot names are the contact sheet's, which is the point -- see kJobs in
+	// Render.cpp.
+	if( only == "--movie" )
+	{
+		const std::string shot     = ( argc > 2 ) ? argv[ 2 ] : "";
+		const double      seconds  = ( argc > 3 ) ? std::atof( argv[ 3 ] ) : 4.0;
+		const int         channels = ( argc > 4 ) ? std::atoi( argv[ 4 ] ) : 2;
+		const int         width    = ( argc > 5 ) ? std::atoi( argv[ 5 ] ) : 1920;
+		const int         height   = ( argc > 6 ) ? std::atoi( argv[ 6 ] ) : 1080;
+		const float       hue      = ( argc > 7 ) ? (float)std::atof( argv[ 7 ] ) : 0.5f;
+		return renderMovie( shot, seconds, channels, width, height, hue );
 	}
 
 	if( only == "--sheet" )

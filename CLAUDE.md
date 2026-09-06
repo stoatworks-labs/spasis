@@ -17,6 +17,10 @@ Read `AGENTS.md` before changing the field law or the analysis.
 - The invariants: `./build/sptest`
 - One group: `./build/sptest --field` (also `--width --fft --lfe --ring --fallback --shaders`)
 - Pictures: `./build/sptest --sheet docs/sheet 2` (and `... 6` for surround)
+- Video frames: `./build/sptest --movie <shot> [secs] [chans] [w] [h] [hue]` —
+  raw RGBA on stdout for ffmpeg. Shot names are the contact sheet's, from one
+  shared table, so a shot is always a configuration the sheet also checks.
+  **Nothing else may print to stdout in this mode.**
 - Instantiate sweep: `../resolume-ofx-bridge/build/ffgltest "build/Spasis Field.bundle"`
 
 ## Notes
