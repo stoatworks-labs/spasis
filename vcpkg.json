@@ -1,6 +1,6 @@
 {
   "name": "spasis",
-  "version-string": "0.1.0",
+  "version-string": "0.1.1",
   "description": "Dependencies for building the spasis FFGL sources. GLEW is only needed on Windows; macOS uses the system OpenGL framework. Audio capture is miniaudio, vendored as a submodule under external/ -- deliberately not a vcpkg port, because vcpkg triplets are per-architecture and cannot produce the universal macOS binary.",
   "dependencies": [
     {

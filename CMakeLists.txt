@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(Spasis VERSION 0.1.0 LANGUAGES C CXX)
+project(Spasis VERSION 0.1.1 LANGUAGES C CXX)
 
 #-----------------------------------------------------------------------------
 # Architecture. Must sit immediately after project() and before any target
