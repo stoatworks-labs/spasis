@@ -1,0 +1,3 @@
+# Files in demo/ that document the demo but must not be served. Wrangler uploads
+# everything in the assets directory otherwise.
+README.md
