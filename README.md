@@ -105,14 +105,14 @@ It has no capture device, so it runs that same synthetic programme.
 
 ## Download
 
-**[v0.1.0](https://github.com/stoatworks-labs/spasis/releases/tag/v0.1.0)** — prebuilt for macOS and Windows. Pick your platform:
+**[v0.1.1](https://github.com/stoatworks-labs/spasis/releases/tag/v0.1.1)** — prebuilt for macOS and Windows. Pick your platform:
 
 <details>
 <summary><b>macOS</b> — Universal (Apple Silicon + Intel)</summary>
 
 | Build | Download | Size |
 | --- | --- | --- |
-| Universal (Apple Silicon + Intel) · .dmg disk image | [`spasis-0.1.0-macos-universal.dmg`](https://github.com/stoatworks-labs/spasis/releases/download/v0.1.0/spasis-0.1.0-macos-universal.dmg) | 2.0 MB |
+| Universal (Apple Silicon + Intel) · .dmg disk image | [`spasis-0.1.1-macos-universal.dmg`](https://github.com/stoatworks-labs/spasis/releases/download/v0.1.1/spasis-0.1.1-macos-universal.dmg) | 2.0 MB |
 | Universal (Apple Silicon + Intel) · .zip archive | [`spasis-macos-universal.zip`](https://github.com/stoatworks-labs/spasis/releases/latest/download/spasis-macos-universal.zip) | 1.8 MB |
 
 </details>
@@ -122,7 +122,7 @@ It has no capture device, so it runs that same synthetic programme.
 
 | Build | Download | Size |
 | --- | --- | --- |
-| x64 · .exe installer | [`spasis-0.1.0-windows-x86_64-setup.exe`](https://github.com/stoatworks-labs/spasis/releases/download/v0.1.0/spasis-0.1.0-windows-x86_64-setup.exe) | 306 KB |
+| x64 · .exe installer | [`spasis-0.1.1-windows-x86_64-setup.exe`](https://github.com/stoatworks-labs/spasis/releases/download/v0.1.1/spasis-0.1.1-windows-x86_64-setup.exe) | 303 KB |
 | x64 · .zip archive | [`spasis-windows-x86_64.zip`](https://github.com/stoatworks-labs/spasis/releases/latest/download/spasis-windows-x86_64.zip) | 812 KB |
 
 </details>
