@@ -1065,7 +1065,7 @@ mountDemo({
       { id: DISPLAY.FIELD, name: 'Spasis Field', hint: 'The goniometer. Where the signal sits, instant by instant.' },
       { id: DISPLAY.ROSE, name: 'Spasis Rose', hint: 'Polar level: energy against direction, or a lobe per speaker.' },
       { id: DISPLAY.WIDTH, name: 'Spasis Width', hint: 'Stereo width against frequency.' },
-      { id: DISPLAY.BALANCE, name: 'Spasis Balance', hint: 'Tonal balance.' },
+      { id: DISPLAY.BALANCE, name: 'Spasis Tonal', hint: 'Tonal balance.' },
     ],
   },
 

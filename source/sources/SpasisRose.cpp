@@ -24,7 +24,7 @@ public:
 static CFFGLPluginInfo PluginInfo(
 	PluginFactory< SpasisRose >,   // Create method
 	"SP02",                  // Plugin unique ID, maximum length 4
-	"Spasis Rose",                  // Plugin name, maximum length 16
+	"SW Spasis Rose",               // Plugin name, maximum length 16
 	2,                     // API major version
 	1,                     // API minor version
 	0,                     // Plugin major version

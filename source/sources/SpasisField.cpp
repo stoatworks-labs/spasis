@@ -24,7 +24,7 @@ public:
 static CFFGLPluginInfo PluginInfo(
 	PluginFactory< SpasisField >,   // Create method
 	"SP01",                  // Plugin unique ID, maximum length 4
-	"Spasis Field",                  // Plugin name, maximum length 16
+	"SW Spasis Field",               // Plugin name, maximum length 16
 	2,                     // API major version
 	1,                     // API minor version
 	0,                     // Plugin major version

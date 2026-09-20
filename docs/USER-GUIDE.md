@@ -12,7 +12,7 @@ meter bridge.
 | **Spasis Field** | The goniometer. Where the signal sits, instant by instant. |
 | **Spasis Rose** | Polar level: energy against direction, or a lobe per speaker. |
 | **Spasis Width** | Stereo width against frequency. |
-| **Spasis Balance** | Tonal balance. |
+| **Spasis Tonal** | Tonal balance. Resolume shows it as `SW Spasis Tonal`; the file is `Spasis Balance.bundle`. |
 
 > **Before you rely on this:** the central claim — that one law reproduces the goniometer
 > engineers already own and keeps working past two channels — is measured rather than

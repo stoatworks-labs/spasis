@@ -24,7 +24,7 @@ public:
 static CFFGLPluginInfo PluginInfo(
 	PluginFactory< SpasisBalance >,   // Create method
 	"SP04",                  // Plugin unique ID, maximum length 4
-	"Spasis Balance",                  // Plugin name, maximum length 16
+	"SW Spasis Tonal",                 // Plugin name, maximum length 16
 	2,                     // API major version
 	1,                     // API minor version
 	0,                     // Plugin major version

@@ -26,7 +26,7 @@ you can put on a screen rather than in a meter bridge.
 | **Spasis Field** | The goniometer. Where the signal sits, instant by instant. |
 | **Spasis Rose** | Polar level: energy against direction, or a lobe per speaker. |
 | **Spasis Width** | Stereo width against frequency. |
-| **Spasis Balance** | Tonal balance. |
+| **Spasis Tonal** | Tonal balance. |
 
 Every one of them takes the same two controls: a **Shape** — circle, half
 circle, or the whole raster — and a **Style** — oscilloscope, bargraph, or
@@ -142,8 +142,11 @@ extra effects folder and restart Resolume:
 - Windows — `Documents\Resolume Arena\Extra Effects\`
 
 Use `Resolume Avenue` in place of `Resolume Arena` for Avenue. They appear as
-four **sources** — not effects — named **Spasis Field**, **Spasis Rose**,
-**Spasis Width** and **Spasis Balance**.
+four **sources** — not effects. Resolume lists them as **SW Spasis Field**,
+**SW Spasis Rose**, **SW Spasis Width** and **SW Spasis Tonal** — the `SW `
+prefix groups every Stoatworks plugin together in the browser, and *Tonal* is
+*Balance* shortened to fit FFGL's sixteen characters. The file is still
+`Spasis Balance.bundle`, so an upgrade replaces it in place.
 
 Install all four or install one; they share no state and none of them needs the
 others. What they do share is the **Audio Input** control, and three of the four
