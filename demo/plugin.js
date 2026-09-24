@@ -1032,6 +1032,9 @@ function createRenderer(gl) {
 
 mountDemo({
   name: 'Spasis',
+  // The FFGL type the plugin registers (PluginInfo), for the kit banner's
+  // closing sentence, which said "effect" on every page until 2026-09-24.
+  kind: 'source',
   pluginId: 'SP01',
   tagline: 'The shape of the stereo and surround field, as four Resolume sources',
   repo: 'https://github.com/stoatworks-labs/spasis',
