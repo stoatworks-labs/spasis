@@ -977,7 +977,7 @@ function createRenderer(gl) {
         gl.disable(gl.BLEND);
         decayShader.use();
         bindTexture(gl, 0, accum[src].texture);
-        decayShader.set('accumTexture', 0);
+        decayShader.setSampler('accumTexture', 0);
         // Half-life in seconds -> per-frame multiplier, so persistence means
         // the same thing whatever the page's frame rate is.
         decayShader.set('decay', Math.pow(0.5, dt / PersistHalfLife(params.get('persist'))));
@@ -1000,7 +1000,7 @@ function createRenderer(gl) {
       if (input?.texture) {
         blitShader.use();
         bindTexture(gl, 0, input.texture);
-        blitShader.set('clipTexture', 0);
+        blitShader.setSampler('clipTexture', 0);
         quad.draw();
       }
 
@@ -1012,7 +1012,7 @@ function createRenderer(gl) {
       gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
       compositeShader.use();
       bindTexture(gl, 0, accum[current].texture);
-      compositeShader.set('accumTexture', 0);
+      compositeShader.setSampler('accumTexture', 0);
       compositeShader.set('foreground', r, g, b, 1);
       compositeShader.set('background', 0, 0, 0, params.get('background'));
       quad.draw();
