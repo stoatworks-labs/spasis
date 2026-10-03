@@ -212,7 +212,7 @@ is a picture; look at the files.
 
 ## Things deliberately not done
 
-**No OpenFX build.** Every sibling repo ships one, and it would be wrong here:
+**No OpenFX build.** Many sibling repos ship one, and it would be wrong here:
 spasis captures live audio, and Resolve, Nuke and Vegas have no live audio to
 capture. An OFX build would be four plugins that can only ever draw the
 fallback path, which is one plugin's worth of function under four names.
