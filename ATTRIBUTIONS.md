@@ -6,7 +6,7 @@ spasis is MIT licensed. It builds on the following.
 
 | Project | Licence | Used for |
 |---|---|---|
-| [Resolume FFGL SDK](https://github.com/resolume/ffgl) | MIT | The plugin API, `ffglex` GL helpers, the screen quad and shader wrapper |
+| [Resolume FFGL SDK](https://github.com/resolume/ffgl) | BSD-3-Clause (copyright FreeFrame) | The plugin API, `ffglex` GL helpers, the screen quad and shader wrapper |
 | [miniaudio](https://github.com/mackron/miniaudio) (v0.11.25, David Reid) | Public domain / MIT-0 | Capture device enumeration and the audio callback, on CoreAudio, WASAPI and ALSA |
 
 ## Code carried across from sibling repos
