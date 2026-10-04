@@ -8,6 +8,22 @@ set -euo pipefail
 cd "$( dirname "$0" )/.."
 BUILD="${BUILD_DIR:-build}"
 
+# resolume-ofx-bridge, for ffgltest. It sits beside this repo's checkout -- and
+# from a git worktree `..` is the worktrees folder, not Projects/resolume, so
+# the main checkout is found through git's common dir as well. SPASIS_BRIDGE
+# overrides both.
+BRIDGE="${SPASIS_BRIDGE:-}"
+if [[ -z "$BRIDGE" ]]; then
+	for candidate in "../resolume-ofx-bridge" \
+		"$( dirname "$( git rev-parse --path-format=absolute --git-common-dir 2>/dev/null )" )/../resolume-ofx-bridge"; do
+		if [[ -d "$candidate/build" ]]; then
+			BRIDGE="$candidate"
+			break
+		fi
+	done
+fi
+BRIDGE="${BRIDGE:-../resolume-ofx-bridge}"
+
 echo
 echo "== shaders =="
 # The static half, glslc, which needs no GPU. The driver half is part of sptest
@@ -77,14 +93,18 @@ if [[ "$( uname -s )" == "Darwin" ]]; then
 		printf '%-18s %s\n' "$name" "$declared"
 	done
 
-	SWEEP=../resolume-ofx-bridge/build/ffgltest
+	SWEEP="$BRIDGE/build/ffgltest"
+	echo
+	echo "== instantiate sweep =="
 	if [[ -x "$SWEEP" ]]; then
-		echo
-		echo "== instantiate sweep =="
 		for bundle in "$BUILD"/*.bundle; do
 			printf '%-18s ' "$( basename "$bundle" .bundle )"
 			"$SWEEP" "$bundle" 2>&1 | tail -1
 		done
+	else
+		# Said out loud: this used to skip without a word, which is how it went
+		# unrun from every worktree.
+		echo "   skipped: ffgltest not built ($SWEEP) -- plugMain is UNVERIFIED"
 	fi
 fi
 
