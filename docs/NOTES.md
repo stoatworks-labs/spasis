@@ -1,11 +1,19 @@
 # spasis — working notes
 
-## Status (2026-09-05, v0.1.0)
+## Status (2026-10-04, v0.1.2)
 
 Built from nothing in one session, then tested in Resolume Arena 7.27.1 on both
 platforms, and released as v0.1.0 on 2026-09-05. 296 invariant checks, a
 twelve-picture contact sheet, universal macOS bundles, MSVC x64 DLLs, and the
 fleet's `ffgltest` instantiate sweep all pass.
+
+2026-10-04: v0.1.1 (2026-09-06) added the user guide and the fourth About button
+that opens it; the analysis and shaders are byte-for-byte v0.1.0's and the same
+296 checks pass. The browser demo at `spasis-demo.stoatworks-labs.com` followed
+the same day. v0.1.2 (2026-09-20) is current: it renamed the four as Resolume
+shows them — **SW Spasis Field**, **Rose**, **Width** and **Tonal**, *Balance*
+becoming *Tonal* to fit FFGL's sixteen characters. Plugin IDs and bundle names
+are unchanged. The host runs below are the v0.1.0 ones.
 
 **Run in the real host, both platforms:**
 
@@ -32,11 +40,11 @@ fleet's `ffgltest` instantiate sweep all pass.
    (llvmpipe says nothing about speed), no VJ has touched the controls.
 3. No factory presets. The fleet's preset pattern (copy-based apply does not
    work in Resolume) applies when they are added.
-4. No user guide. `docs/USER-GUIDE.md` does not exist, so `projects.json` has no
-   `guide` key and the About block ships three buttons where most siblings have
-   four. Writing one is what adds the fourth — do not add the key first, or all
-   four plugins ship a button that opens a 404.
-5. No video, so no `youtube` entry and no README embed.
+4. ~~No user guide.~~ Done in v0.1.1: `docs/USER-GUIDE.md` exists,
+   `projects.json` has its `guide` key, and the About block ships the fourth
+   button.
+5. ~~No video.~~ Done 2026-09-06: `projects.json` has the `youtube` entry
+   (`ADnNv8YfdMQ`) and the README embeds it.
 6. **No `sptest --shaders` in CI.** A GitHub macOS runner cannot create an
    accelerated 4.1 core context, so CI runs `--offline` and compiles the shaders
    statically with `tools/check-shaders.sh` instead. Only a real driver catches
