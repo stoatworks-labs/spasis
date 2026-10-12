@@ -1,8 +1,8 @@
 # Spasis user guide
 
 Spasis is **four audio sources for Resolume Arena and Avenue** that draw the shape of the
-stereo and surround field — where the energy is pointing, how wide each part of the spectrum
-is, and what the balance looks like — as displays you can put on a screen rather than in a
+stereo and surround field (where the energy is pointing, how wide each part of the spectrum
+is, and what the balance looks like) as displays you can put on a screen rather than in a
 meter bridge.
 
 ![Spasis Field — the goniometer, circle shape, oscilloscope style](sheet/field-circle-scope.png)
@@ -14,18 +14,18 @@ meter bridge.
 | **Spasis Width** | Stereo width against frequency. |
 | **Spasis Tonal** | Tonal balance. Resolume shows it as `SW Spasis Tonal`; the file is `Spasis Balance.bundle`. |
 
-> **Before you rely on this:** the central claim — that one law reproduces the goniometer
-> engineers already own and keeps working past two channels — is measured rather than
+> **Before you rely on this:** the main claim, that one law reproduces the goniometer
+> engineers already own and keeps working past two channels, is measured rather than just
 > asserted. 296 offline checks cover the FFT against a direct DFT to within −80 dB, a
 > hard-panned channel landing at exactly 45°, width agreeing with `|S|/(|M|+|S|)` at every
 > landmark and generalising to six channels, and the capture ring dropping the oldest sample
 > and never the newest.
 >
-> **It has never been fed by a real desk, and it has never run a show.** A microphone and a
-> silent loopback are not a 5.1 stem feed, so the layouts, the rose and the width plot have
-> only ever seen synthetic multichannel audio. First contact with a live rig found five bugs
-> in a plugin that had already passed three hundred offline checks. Check it in your own rig
-> before trusting it in front of an audience.
+> **It has never been fed by a real desk, and it has never done a show.** A microphone and a
+> silent loopback aren't a 5.1 stem feed, so the layouts, the rose and the width plot have
+> only ever seen synthetic multichannel audio. The first time it met a live rig it turned up
+> five bugs in a plugin that had already passed three hundred offline checks. Check it in your
+> own rig before you trust it in front of an audience.
 >
 > This codebase was created with AI assistance, directed and reviewed by a human author.
 
@@ -40,7 +40,7 @@ folder and restart Resolume:
 - Windows — `Documents\Resolume Arena\Extra Effects\`
 
 Use `Resolume Avenue` in place of `Resolume Arena` for Avenue. They appear as four
-**sources**, not effects — so look under Sources in the browser, not under Effects.
+**sources**, not effects, so look under Sources in the browser rather than Effects.
 
 Install all four or install one. They share no state and none of them needs the others.
 
@@ -54,7 +54,7 @@ A goniometer needs left and right as waveforms. Per-band width needs the complex
 each channel separately. A surround rose needs six. None of that can be recovered from a mono
 magnitude spectrum, and a plugin that guessed would draw four plausible pictures of nothing.
 
-So Spasis opens **its own capture device**, and that is the one piece of setup it needs. Until
+So Spasis opens **its own capture device**, and that's the one piece of setup it needs. Until
 you point it at something, three of the four displays have nothing real to draw.
 
 ## Setting the audio up
@@ -63,15 +63,15 @@ you point it at something, three of the four displays have nothing real to draw.
 plus `Resolume (mono)` at the top.
 
 - **`Resolume (mono)`** is the default. It uses the host's own FFT, needs no setup, and works
-  in any host — and it can only drive **Balance**. Field, Rose and Width will show their
-  graticule at full brightness and nothing else, which is deliberate: an empty instrument
-  rather than a black frame.
+  in any host, but it can only drive **Balance**. Field, Rose and Width will show their
+  graticule at full brightness and nothing else, on purpose: an empty instrument rather
+  than a black frame.
 - **Anything else** is a real capture device. A loopback such as
   [BlackHole](https://existential.audio/blackhole/), a Dante Virtual Soundcard, or an
   interface with the desk feeding it.
 
-**Rescan Inputs** re-reads the device list. Press it after plugging something in — devices are
-remembered by name rather than by position, so a rescan will not silently move your selection
+**Rescan Inputs** re-reads the device list. Press it after plugging something in. Devices are
+remembered by name rather than by position, so a rescan won't silently move your selection
 onto a different box.
 
 **Speakers** tells Spasis what the channels *mean*:
@@ -85,21 +85,20 @@ onto a different box.
 | **Ring** | An even ring of whatever **Max Channels** allows |
 
 **Max Channels** caps how many channels are opened, 1 to 8. A device offering more is capped
-rather than refused — a 112-channel L-ISA bridge opens as 8.
+rather than refused: a 112-channel L-ISA bridge opens as 8.
 
 ### Why stereo is ±45° and not ±30°
 
-This is the most consequential number in the project, and it is worth knowing that it is
-deliberate.
+This is the most consequential number in the project, and it's there on purpose.
 
 The field point for one instant is the amplitude-weighted sum of the unit vectors pointing at
-each speaker. At ±45° that arithmetic comes out as exactly `(side, mid)` — which *is* the
+each speaker. At ±45° that arithmetic comes out as exactly `(side, mid)`, which *is* the
 classic goniometer: mono straight up the vertical axis, out-of-phase flat along the
 horizontal. The generalised law and the instrument every engineer already owns are the same
-thing, and they are only the same thing at 45°.
+thing, and they're only the same thing at 45°.
 
 At the ITU ±30° the same law puts a hard-panned channel at 30°, and the picture stops matching
-the meter bridge you are used to. That is measurable, and it is measured: the harness fails if
+the meter bridge you're used to. That's measurable, and it's measured: the harness fails if
 either angle moves.
 
 ## Shape and Style
@@ -136,8 +135,8 @@ Four displays × three shapes × three styles is thirty-six pictures out of one 
 | **Lobes** | Field | **Rose only.** *Field* draws energy against direction as one continuous shape; *Speakers* draws a lobe per speaker. |
 
 A parameter change never clears the capture ring, so nothing goes blank while you are dialling
-something in. A change of *geometry* does clear the persistence trail — otherwise the old
-shape would smear into the new one.
+something in. A change of *geometry* does clear the persistence trail, or the old shape would
+smear into the new one.
 
 ![Rose, circle, bars — energy by direction](sheet/rose-circle-bars.png)
 
@@ -147,17 +146,17 @@ shape would smear into the new one.
 lies along the horizontal. A hard-panned channel sits at 45°. A wide mix fills the circle; a
 narrow one collapses toward the vertical.
 
-**Rose** is level against direction. In *Field* mode it is a continuous shape showing where the
-energy is; in *Speakers* mode it is one lobe per speaker, which is the view that answers "is
+**Rose** is level against direction. In *Field* mode it's a continuous shape showing where the
+energy is; in *Speakers* mode it's one lobe per speaker, which is the view that answers "is
 anything actually coming out of the surrounds".
 
 **Width** plots stereo width against frequency, low at one end and high at the other. A
-typical mix shows correlated bass and decorrelated air — narrow at the bottom, wide at the top.
-It is the display that shows a mono-ed bottom end at a glance.
+typical mix shows correlated bass and decorrelated air: narrow at the bottom, wide at the top.
+It's the display that shows a mono-ed bottom end at a glance.
 
 ![Width against frequency: correlated bass, decorrelated air](sheet/width-raster-scope.png)
 
-**Balance** is tonal balance, and it is the only one of the four that works on the default
+**Balance** is tonal balance, and it's the only one of the four that works on the default
 `Resolume (mono)` input.
 
 ![Balance, raster, bars](sheet/balance-raster-bars.png)
@@ -165,25 +164,25 @@ It is the display that shows a mono-ed bottom end at a glance.
 ## If it looks wrong
 
 **Three of the four show only the graticule.** Audio Input is still on `Resolume (mono)`.
-That path physically cannot supply what Field, Rose and Width need, so they draw an empty
+That path physically can't supply what Field, Rose and Width need, so they draw an empty
 instrument on purpose. Point Audio Input at a real capture device.
 
-**It says the input is silent.** The device opened, it is running, and it has returned
+**It says the input is silent.** The device opened, it's running, and it has returned
 bit-exact zero for three seconds. On macOS the most likely cause is **microphone permission**,
-which belongs to *Resolume*, not to the plugin — and a host without it is not given an error.
-It is handed a device that opens, runs, and returns zero for ever. Check Resolume under
+which belongs to *Resolume*, not to the plugin, and a host without it isn't given an error.
+It's handed a device that opens, runs, and returns zero forever. Check Resolume under
 **System Settings › Privacy & Security › Microphone**.
 
-The other two causes look identical to the code: a Dante receiver that is not patched, and a
+The other two causes look identical to the code: a Dante receiver that isn't patched, and a
 loopback device with nothing routed to it.
 
-**The field sits at an angle nothing explains.** Check **Speakers**. A layout that does not
+**The field sits at an angle nothing explains.** Check **Speakers**. A layout that doesn't
 match the feed puts the channels at the wrong angles, and the picture is then a correct
 drawing of the wrong assumption.
 
-**Nothing appears at all, and the graticule is missing too.** That is not a routing problem.
-Look in the log — `~/Library/Logs/spasis/` on macOS, `%LOCALAPPDATA%\spasis\logs\` on
-Windows — for a shader that failed to compile. FFGL gives a plugin no way to put a message
+**Nothing appears at all, and the graticule is missing too.** That isn't a routing problem.
+Look in the log (`~/Library/Logs/spasis/` on macOS, `%LOCALAPPDATA%\spasis\logs\` on
+Windows) for a shader that failed to compile. FFGL gives a plugin no way to put a message
 on screen, so the log is the only place it can say so.
 
 ## Licence
