@@ -23,6 +23,8 @@ of the spectrum is, and what the balance looks like) as sonar-style displays
 you can put up on a screen rather than leave in a meter bridge. Handy for when
 the band decides the goniometer belongs on the LED wall.
 
+The [project page](https://stoatworks-labs.com/software/spasis/) has the downloads, the [user guide](https://stoatworks-labs.com/software/spasis/guide/) and the video.
+
 | Source | What it shows |
 |---|---|
 | **Spasis Field** | The goniometer. Where the signal sits, instant by instant. |
